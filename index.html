@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enjoy Work Coworking — Relatório Financeiro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dk:     #00131F;
+  --bg2:    #001D2E;
+  --bg3:    #002741;
+  --gd:     #B18C54;
+  --gd2:    #D4A96A;
+  --bl:     #2F5E8F;
+  --border: rgba(177,140,84,0.25);
+  --border2:rgba(255,255,255,0.07);
+  --text:   #E8E4DC;
+  --text2:  #8A98A4;
+  --green:  #6DC49A;
+  --red:    #E07070;
+  --lblue:  #6EA8D8;
+  --orange: #E8A04A;
+  --purple: #7F77DD;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--dk);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* ── LAYOUT ── */
+.page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* ── HEADER ── */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+.logo-area { display: flex; align-items: center; gap: 14px; }
+.logo-bar { width: 4px; height: 42px; background: linear-gradient(180deg, var(--gd2), var(--gd)); border-radius: 2px; flex-shrink: 0; }
+.logo-title { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); }
+.logo-sub { font-size: 11px; color: var(--text2); margin-top: 2px; font-weight: 400; letter-spacing: 0.03em; }
+.header-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--gd);
+  background: rgba(177,140,84,0.1);
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+/* ── NAV ── */
+.nav-wrap { background: var(--dk); padding: 1.25rem 2rem; border-bottom: 1px solid var(--border2); position: sticky; top: 73px; z-index: 99; }
+.nav { display: flex; flex-wrap: wrap; gap: 8px; }
+.nav-btn {
+  font-family: 'Sora', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 9px 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--gd);
+  cursor: pointer;
+  background: #FFFFFF;
+  color: #00131F;
+  letter-spacing: 0.04em;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.nav-btn:hover:not(.active) { opacity: 0.8; }
+.nav-btn.active { font-weight: 800; box-shadow: 0 0 0 2px var(--gd); }
+
+/* ── CONTENT ── */
+.content { padding: 2rem; }
+
+/* ── CARDS ── */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+.card {
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border2);
+  border-top: 2px solid var(--gd);
+}
+.card .lbl { font-size: 10px; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+.card .val { font-size: 18px; font-weight: 700; }
+
+.cards-fixos { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+.card-fixo {
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border2);
+  position: relative;
+  overflow: hidden;
+}
+.card-fixo::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.card-fixo.c-orange::before { background: var(--orange); }
+.card-fixo.c-gold::before   { background: var(--gd); }
+.card-fixo.c-blue::before   { background: var(--lblue); }
+.card-fixo.c-purple::before { background: var(--purple); }
+.card-fixo .nome { font-size: 10px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px; }
+.card-fixo .total { font-size: 19px; font-weight: 800; margin-bottom: 3px; }
+.card-fixo .media { font-size: 11px; color: var(--text2); }
+.card-fixo .barra { height: 2px; border-radius: 2px; margin-top: 10px; opacity: 0.6; }
+
+/* ── COLORS ── */
+.v-gold   { color: var(--gd); }
+.v-blue   { color: var(--lblue); }
+.v-red    { color: var(--red); }
+.v-green  { color: var(--green); }
+.v-white  { color: var(--text); }
+.v-orange { color: var(--orange); }
+.v-purple { color: var(--purple); }
+
+/* ── SECTION TITLE ── */
+.section {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gd);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 1.5rem 0 0.75rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section::before { content: ''; width: 3px; height: 12px; background: var(--gd); border-radius: 2px; }
+
+.divider { height: 1px; background: var(--border2); margin: 1.5rem 0; }
+.chart-wrap { position: relative; width: 100%; }
+.note {
+  font-size: 12px;
+  color: var(--text2);
+  padding: 0.7rem 1rem;
+  background: rgba(47,94,143,0.1);
+  border-radius: 6px;
+  border-left: 2px solid var(--bl);
+  margin: 1rem 0;
+}
+
+/* ── LEGEND ── */
+.legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 0.75rem; font-size: 12px; color: var(--text2); }
+.dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 5px; vertical-align: middle; }
+
+/* ── TABLE ── */
+table { width: 100%; font-size: 13px; border-collapse: collapse; table-layout: fixed; }
+th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 10px;
+  color: var(--gd);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border2);
+  color: var(--text);
+  word-break: break-word;
+  vertical-align: middle;
+}
+td.num { text-align: right; white-space: nowrap; font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+td.r { color: var(--red); }
+td.g { color: var(--green); }
+td.gold { color: var(--gd); }
+td.blue { color: var(--lblue); }
+td.orange { color: var(--orange); }
+td.purple { color: var(--purple); }
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr.sub td { background: rgba(177,140,84,0.07); font-weight: 600; color: var(--text); }
+tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background: rgba(177,140,84,0.05); color: var(--text); }
+
+/* ── PILLS ── */
+.pill { display: inline-block; font-size: 10px; padding: 2px 9px; border-radius: 4px; font-weight: 600; white-space: nowrap; letter-spacing: 0.03em; }
+.p-imp    { background: rgba(47,94,143,0.2);   color: var(--lblue);  border: 1px solid rgba(47,94,143,0.4); }
+.p-alg    { background: rgba(177,140,84,0.15); color: var(--gd);     border: 1px solid rgba(177,140,84,0.4); }
+.p-ser    { background: rgba(224,112,112,0.12);color: var(--red);    border: 1px solid rgba(224,112,112,0.3); }
+.p-edp    { background: rgba(232,160,74,0.15); color: var(--orange); border: 1px solid rgba(232,160,74,0.35); }
+.p-tar    { background: rgba(255,255,255,0.05);color: var(--text2);  border: 1px solid var(--border2); }
+.p-ent    { background: rgba(109,196,154,0.12);color: var(--green);  border: 1px solid rgba(109,196,154,0.3); }
+.p-cmp    { background: rgba(110,168,216,0.1); color: var(--lblue);  border: 1px solid rgba(110,168,216,0.25); }
+.p-mut    { background: rgba(177,140,84,0.12); color: var(--gd);     border: 1px solid var(--border); }
+
+/* ── MES TABS ── */
+.mes-tabs { display: flex; gap: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.mes-tab {
+  font-family: 'Sora', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--gd);
+  cursor: pointer;
+  background: #FFFFFF;
+  color: #00131F;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+.mes-tab:hover:not(.active) { opacity: 0.8; }
+.mes-tab.active { font-weight: 800; box-shadow: 0 0 0 2px var(--gd); }
+
+/* ── FOOTER ── */
+.site-footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--border2);
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 2rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .site-header { padding: 1rem; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .nav-wrap { padding: 1rem; top: 120px; }
+  .content { padding: 1rem; }
+  .cards { grid-template-columns: 1fr 1fr; }
+  .cards-fixos { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="logo-area">
+    <div class="logo-bar"></div>
+    <div>
+      <div class="logo-title">Enjoy Work Coworking — Relatório Financeiro</div>
+      <div class="logo-sub">CNPJ 45.759.346/0001-06 · Sicoob + Itaú · Dez/25 a Mar/26</div>
+    </div>
+  </div>
+  <div class="header-badge">Atualizado: Mar/26</div>
+</header>
+
+<!-- NAV -->
+<div class="nav-wrap">
+  <div class="nav">
+    <button class="nav-btn active" onclick="goTo('resumo',this)">Resumo geral</button>
+    <button class="nav-btn" onclick="goTo('fixos',this)">Custos fixos</button>
+    <button class="nav-btn" onclick="goTo('categorias',this)">Por categoria</button>
+    <button class="nav-btn" onclick="goTo('lancamentos',this)">Lançamentos</button>
+    <button class="nav-btn" onclick="goTo('mutuo',this)">Mútuo ENJOY</button>
+    <button class="nav-btn" onclick="goTo('excluidos',this)">Excluídos</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ══════════════════════════════════════════
+     ABA: RESUMO GERAL
+══════════════════════════════════════════ -->
+<div id="aba-resumo">
+  <div class="cards">
+    <div class="card"><div class="lbl">Melhor mês (entradas)</div><div class="val v-gold">Mar/26</div></div>
+    <div class="card"><div class="lbl">Menor custo op.</div><div class="val v-green">Dez/25</div></div>
+    <div class="card"><div class="lbl">Maior custo op.</div><div class="val v-red">Fev/26</div></div>
+    <div class="card"><div class="lbl">Tendência</div><div class="val v-green">Melhorando ↑</div></div>
+  </div>
+
+  <div class="section">Custos fixos recorrentes — visão rápida</div>
+  <div class="cards-fixos">
+    <div class="card-fixo c-orange">
+      <div class="nome">Energia elétrica — EDP</div>
+      <div class="total v-orange">R$ 5.374,38</div>
+      <div class="media">Média R$ 1.343/mês · 4 meses</div>
+      <div class="barra" style="background:var(--orange)"></div>
+    </div>
+    <div class="card-fixo c-gold">
+      <div class="nome">Aluguel — ***.191.786</div>
+      <div class="total v-gold">R$ 24.000,00</div>
+      <div class="media">R$ 6.000/mês · fixo todos os meses</div>
+      <div class="barra" style="background:var(--gd)"></div>
+    </div>
+    <div class="card-fixo c-blue">
+      <div class="nome">Telecom — DÉB.CONV</div>
+      <div class="total v-blue">R$ 1.553,10</div>
+      <div class="media">Média R$ 388/mês · todos os meses</div>
+      <div class="barra" style="background:var(--lblue)"></div>
+    </div>
+    <div class="card-fixo c-purple">
+      <div class="nome">Prefeitura — ISSQN/IPTU</div>
+      <div class="total v-purple">R$ 2.980,18</div>
+      <div class="media">Jan R$ 1.669 · Mar R$ 1.311 · bimestral</div>
+      <div class="barra" style="background:var(--purple)"></div>
+    </div>
+  </div>
+
+  <div class="section">Evolução mensal</div>
+  <div class="legend">
+    <span><span class="dot" style="background:#2F5E8F"></span>Entradas</span>
+    <span><span class="dot" style="background:#E07070"></span>Custos op.</span>
+    <span><span class="dot" style="background:#B18C54"></span>Saldo</span>
+  </div>
+  <div class="chart-wrap" style="height:260px"><canvas id="chart-resumo"></canvas></div>
+  <div class="divider"></div>
+
+  <div class="section">Comparativo consolidado</div>
+  <table>
+    <thead><tr><th style="width:14%">Mês</th><th style="width:20%">Entradas</th><th style="width:20%">Custos op.</th><th style="width:20%">Saldo</th><th style="width:13%">Var. ent.</th><th style="width:13%">Var. cust.</th></tr></thead>
+    <tbody id="tbody-resumo"></tbody>
+  </table>
+  <div class="note">Excluídos: mútuo ENJOY, Israel Feriane, boletos Intercredis/cartão e empréstimo fixo Sicoob R$ 13.789,49/mês.</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ABA: CUSTOS FIXOS
+══════════════════════════════════════════ -->
+<div id="aba-fixos" style="display:none">
+  <div class="section">Energia elétrica — EDP (28.152.650 + DÉB.TIT.COMPE)</div>
+  <div class="cards">
+    <div class="card"><div class="lbl">Total 4 meses</div><div class="val v-orange">R$ 5.374,38</div></div>
+    <div class="card"><div class="lbl">Média mensal</div><div class="val v-orange">R$ 1.343,60</div></div>
+    <div class="card"><div class="lbl">Maior mês</div><div class="val v-orange">Fev/26 — R$ 1.784</div></div>
+    <div class="card"><div class="lbl">Menor mês</div><div class="val v-orange">Mar/26 — R$ 993</div></div>
+  </div>
+  <div class="chart-wrap" style="height:200px"><canvas id="chart-edp"></canvas></div>
+  <table>
+    <thead><tr><th style="width:12%">Mês</th><th style="width:14%">Data</th><th style="width:50%">Descrição</th><th style="width:24%">Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Dez/25</td><td>22/12</td><td>DÉB.TIT.COMPE (×4 boletos) — EDP</td><td class="num orange">R$ 1.474,08</td></tr>
+      <tr><td>Jan/26</td><td>23/01</td><td>Pix 28.152.650 (×3) — EDP</td><td class="num orange">R$ 1.122,45</td></tr>
+      <tr><td>Fev/26</td><td>27/02</td><td>Pix 28.152.650 (×5) — EDP</td><td class="num orange">R$ 1.784,62</td></tr>
+      <tr><td>Mar/26</td><td>23/03</td><td>EDP — DÉB.TIT.COMPE ×3 boletos: R$ 283,60 (lançto. 83432999) + R$ 350,90 (lançto. 83433000) + R$ 358,73 (lançto. 83433001)</td><td class="num orange">R$ 993,23</td></tr>
+      <tr class="sub"><td colspan="3">Total energia elétrica</td><td class="num orange">R$ 5.374,38</td></tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+  <div class="section">Aluguel — Pix ***.191.786</div>
+  <div class="chart-wrap" style="height:160px"><canvas id="chart-aluguel"></canvas></div>
+  <table>
+    <thead><tr><th style="width:12%">Mês</th><th style="width:14%">Data</th><th style="width:50%">Descrição</th><th style="width:24%">Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Dez/25</td><td>11/12</td><td>Pix ***.191.786 — Aluguel</td><td class="num gold">R$ 6.000,00</td></tr>
+      <tr><td>Jan/26</td><td>23/01</td><td>Pix ***.191.786 — Aluguel</td><td class="num gold">R$ 6.000,00</td></tr>
+      <tr><td>Fev/26</td><td>11/02</td><td>Pix ***.191.786 — Aluguel</td><td class="num gold">R$ 6.000,00</td></tr>
+      <tr><td>Mar/26</td><td>11/03</td><td>Pix ***.191.786 — Aluguel</td><td class="num gold">R$ 6.000,00</td></tr>
+      <tr class="sub"><td colspan="3">Total aluguel</td><td class="num gold">R$ 24.000,00</td></tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+  <div class="section">Telecom — DÉB.CONV</div>
+  <table>
+    <thead><tr><th style="width:12%">Mês</th><th style="width:14%">Data</th><th style="width:50%">Descrição</th><th style="width:24%">Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Dez/25</td><td>11/12</td><td>DÉB.CONV.TELECOMUNICAÇÕES</td><td class="num blue">R$ 206,42</td></tr>
+      <tr><td>Jan/26</td><td>19/01</td><td>DÉB.CONV Telecom (×2)</td><td class="num blue">R$ 438,74</td></tr>
+      <tr><td>Fev/26</td><td>18+27/02</td><td>DÉB.CONV Telecom (×2)</td><td class="num blue">R$ 431,78</td></tr>
+      <tr><td>Mar/26</td><td>11/03</td><td>DÉB.CONV Telecom (×2)</td><td class="num blue">R$ 476,16</td></tr>
+      <tr class="sub"><td colspan="3">Total telecom</td><td class="num blue">R$ 1.553,10</td></tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+  <div class="section">Prefeitura — ISSQN / IPTU</div>
+  <table>
+    <thead><tr><th style="width:12%">Mês</th><th style="width:14%">Data</th><th style="width:50%">Descrição</th><th style="width:24%">Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Dez/25</td><td>—</td><td>Não identificado neste período</td><td class="num" style="color:var(--text2)">—</td></tr>
+      <tr><td>Jan/26</td><td>23/01</td><td>DÉB.CONV.PREFEITURA</td><td class="num purple">R$ 1.668,95</td></tr>
+      <tr><td>Fev/26</td><td>—</td><td>Não identificado neste período</td><td class="num" style="color:var(--text2)">—</td></tr>
+      <tr><td>Mar/26</td><td>23/03</td><td>DÉB.CONV.PREFEITURA</td><td class="num purple">R$ 1.311,23</td></tr>
+      <tr class="sub"><td colspan="3">Total prefeitura (bimestral)</td><td class="num purple">R$ 2.980,18</td></tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+  <div class="section">Resumo consolidado — todos os fixos</div>
+  <div class="chart-wrap" style="height:230px"><canvas id="chart-fixos-total"></canvas></div>
+  <table>
+    <thead><tr><th style="width:30%">Custo fixo</th><th style="width:17%">Dez/25</th><th style="width:17%">Jan/26</th><th style="width:17%">Fev/26</th><th style="width:17%">Mar/26</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--orange);font-weight:600">Energia — EDP</td><td class="num orange">R$ 1.474,08</td><td class="num orange">R$ 1.122,45</td><td class="num orange">R$ 1.784,62</td><td class="num orange">R$ 993,23</td></tr>
+      <tr><td style="color:var(--gd);font-weight:600">Aluguel</td><td class="num gold">R$ 6.000,00</td><td class="num gold">R$ 6.000,00</td><td class="num gold">R$ 6.000,00</td><td class="num gold">R$ 6.000,00</td></tr>
+      <tr><td style="color:var(--lblue);font-weight:600">Telecom</td><td class="num blue">R$ 206,42</td><td class="num blue">R$ 438,74</td><td class="num blue">R$ 431,78</td><td class="num blue">R$ 476,16</td></tr>
+      <tr><td style="color:var(--purple);font-weight:600">Prefeitura</td><td class="num" style="color:var(--text2)">—</td><td class="num purple">R$ 1.668,95</td><td class="num" style="color:var(--text2)">—</td><td class="num purple">R$ 1.311,23</td></tr>
+      <tr class="sub"><td>Total fixos do mês</td><td class="num r">R$ 7.680,50</td><td class="num r">R$ 9.230,14</td><td class="num r">R$ 8.216,40</td><td class="num r">R$ 8.780,62</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ABA: POR CATEGORIA
+══════════════════════════════════════════ -->
+<div id="aba-categorias" style="display:none">
+  <div class="cards">
+    <div class="card"><div class="lbl">Impostos (4 meses)</div><div class="val v-blue">R$ 35.234</div></div>
+    <div class="card"><div class="lbl">Aluguel (4 meses)</div><div class="val v-gold">R$ 24.000</div></div>
+    <div class="card"><div class="lbl">Energia EDP</div><div class="val v-orange">R$ 5.374</div></div>
+    <div class="card"><div class="lbl">Serviços/fornecedores</div><div class="val v-red">R$ 49.409</div></div>
+  </div>
+  <div class="section">Evolução por categoria</div>
+  <div class="legend">
+    <span><span class="dot" style="background:#2F5E8F"></span>Impostos</span>
+    <span><span class="dot" style="background:#B18C54"></span>Aluguel</span>
+    <span><span class="dot" style="background:#E8A04A"></span>Energia EDP</span>
+    <span><span class="dot" style="background:#E07070"></span>Serviços</span>
+    <span><span class="dot" style="background:#5A6A74"></span>Tarifas</span>
+  </div>
+  <div class="chart-wrap" style="height:260px"><canvas id="chart-cat"></canvas></div>
+  <div class="divider"></div>
+  <div class="section">Detalhe por categoria e mês</div>
+  <table>
+    <thead><tr><th style="width:12%">Mês</th><th style="width:17%">Impostos</th><th style="width:15%">Aluguel</th><th style="width:15%">Energia</th><th style="width:17%">Serviços</th><th style="width:14%">Tarifas</th><th style="width:10%">Total</th></tr></thead>
+    <tbody id="tbody-cat"></tbody>
+  </table>
+  <div class="divider"></div>
+  <div class="section">Composição % por mês</div>
+  <div class="chart-wrap" style="height:230px"><canvas id="chart-pct"></canvas></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ABA: LANÇAMENTOS
+══════════════════════════════════════════ -->
+<div id="aba-lancamentos" style="display:none">
+  <div class="mes-tabs">
+    <button class="mes-tab active" onclick="goMes('dez',this)">Dez/25</button>
+    <button class="mes-tab" onclick="goMes('jan',this)">Jan/26</button>
+    <button class="mes-tab" onclick="goMes('fev',this)">Fev/26</button>
+    <button class="mes-tab" onclick="goMes('mar',this)">Mar/26</button>
+  </div>
+
+  <!-- DEZ -->
+  <div id="mes-dez">
+    <div class="cards">
+      <div class="card"><div class="lbl">Entradas</div><div class="val v-green">R$ 11.553</div></div>
+      <div class="card"><div class="lbl">Energia EDP</div><div class="val v-orange">R$ 1.474</div></div>
+      <div class="card"><div class="lbl">Aluguel</div><div class="val v-gold">R$ 6.000</div></div>
+      <div class="card"><div class="lbl">Serviços + Tarifas</div><div class="val v-red">R$ 10.913</div></div>
+    </div>
+    <div class="section">Entradas — Dezembro/25</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Tipo</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>02/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 342,73</td></tr>
+      <tr><td>05/12</td><td>CR Antecipação Mastercard — Cielo</td><td><span class="pill p-ent">Cielo</span></td><td class="num g">R$ 72,23</td></tr>
+      <tr><td>08/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 2.237,00</td></tr>
+      <tr><td>10/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 128,84</td></tr>
+      <tr><td>11/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 700,00</td></tr>
+      <tr><td>16/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 420,83</td></tr>
+      <tr><td>17/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 779,64</td></tr>
+      <tr><td>18/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 276,68</td></tr>
+      <tr><td>19/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 399,00</td></tr>
+      <tr><td>22/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 2.853,76</td></tr>
+      <tr><td>23/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 1.295,20</td></tr>
+      <tr><td>24/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 156,36</td></tr>
+      <tr><td>29/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 1.406,28</td></tr>
+      <tr><td>30/12</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 326,89</td></tr>
+      <tr><td>31/12</td><td>CRÉD.JUROS S/CAPITAL</td><td><span class="pill p-ent">Rendimento</span></td><td class="num g">R$ 157,50</td></tr>
+      <tr class="sub"><td colspan="3">Total entradas</td><td class="num g">R$ 11.552,94</td></tr>
+    </tbody></table>
+    <div class="section">Saídas — Dezembro/25</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Categoria</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>19/12</td><td>Receita Federal — 00.394.460 (×2)</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 4.071,55</td></tr>
+      <tr><td>22/12</td><td>EDP — DÉB.TIT.COMPE (×4 boletos)</td><td><span class="pill p-edp">Energia</span></td><td class="num orange">R$ 1.474,08</td></tr>
+      <tr><td>11/12</td><td>Pix ***.191.786 — Aluguel</td><td><span class="pill p-alg">Aluguel</span></td><td class="num gold">R$ 6.000,00</td></tr>
+      <tr><td>15/12</td><td>Pix ***.098.116</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 3.400,00</td></tr>
+      <tr><td>19/12</td><td>Pix ***.798.336</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 1.793,47</td></tr>
+      <tr><td>05/12</td><td>DÉB.TIT.COMPE (NEZUS)</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 899,03</td></tr>
+      <tr><td>31/12</td><td>Pix 30.397.867</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 960,00</td></tr>
+      <tr><td>22/12</td><td>DÉB.TÍTULO COBRANÇA (×2)</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 887,60</td></tr>
+      <tr><td>03/12</td><td>Pix 07.967.109</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 641,15</td></tr>
+      <tr><td>30/12</td><td>Pix ***.798.336 (×2)</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 665,00</td></tr>
+      <tr><td>11/12</td><td>DÉB.TIT.COMPE + DÉB.TÍTULO + Telecom</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 994,04</td></tr>
+      <tr><td>23/12</td><td>Pix 01.416.295</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 100,98</td></tr>
+      <tr><td>10/12</td><td>Débito pacote serviços</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 30,85</td></tr>
+      <tr><td>—</td><td>Tarifas cobrança (diversas)</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 541,51</td></tr>
+      <tr class="sub"><td colspan="3">Total saídas</td><td class="num r">R$ 22.459,26</td></tr>
+      <tr class="grand"><td colspan="3">Saldo Dez/25</td><td class="num r">- R$ 10.906,32</td></tr>
+    </tbody></table>
+  </div>
+
+  <!-- JAN -->
+  <div id="mes-jan" style="display:none">
+    <div class="cards">
+      <div class="card"><div class="lbl">Entradas</div><div class="val v-green">R$ 8.434</div></div>
+      <div class="card"><div class="lbl">Energia EDP</div><div class="val v-orange">R$ 1.122</div></div>
+      <div class="card"><div class="lbl">Aluguel</div><div class="val v-gold">R$ 6.000</div></div>
+      <div class="card"><div class="lbl">Serviços + Tarifas</div><div class="val v-red">R$ 19.804</div></div>
+    </div>
+    <div class="section">Entradas — Janeiro/26</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Tipo</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>09/01</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 372,46</td></tr>
+      <tr><td>12/01</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 616,72</td></tr>
+      <tr><td>12/01</td><td>PIX Recebido — Cielo</td><td><span class="pill p-ent">Cielo</span></td><td class="num g">R$ 138,08</td></tr>
+      <tr><td>13/01</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 964,88</td></tr>
+      <tr><td>14/01</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 1.145,20</td></tr>
+      <tr><td>16/01</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 1.135,21</td></tr>
+      <tr><td>20/01</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 2.490,00</td></tr>
+      <tr><td>22/01</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 415,88</td></tr>
+      <tr><td>26/01</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 156,36</td></tr>
+      <tr><td>27/01</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 999,00</td></tr>
+      <tr class="sub"><td colspan="3">Total entradas</td><td class="num g">R$ 8.433,79</td></tr>
+    </tbody></table>
+    <div class="section">Saídas — Janeiro/26</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Categoria</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>23/01</td><td>DÉB.CONV.PREFEITURA</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 1.668,95</td></tr>
+      <tr><td>19/01</td><td>Telecom DÉB.CONV (×2)</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 438,74</td></tr>
+      <tr><td>19/01</td><td>DÉB.TIT.COMPE fiscal</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 1.042,54</td></tr>
+      <tr><td>12/01</td><td>DÉB.TIT.COMPE fiscal (×2)</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 787,62</td></tr>
+      <tr><td>05/01</td><td>DÉB.TIT.COMPE (NEZUS)</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 899,03</td></tr>
+      <tr><td>12/01</td><td>DÉB.TÍTULO COBRANÇA</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 487,00</td></tr>
+      <tr><td>05/01</td><td>DÉB.TÍTULO COBRANÇA</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 641,28</td></tr>
+      <tr><td>23/01</td><td>EDP — Pix 28.152.650 (×3)</td><td><span class="pill p-edp">Energia</span></td><td class="num orange">R$ 1.122,45</td></tr>
+      <tr><td>23/01</td><td>Pix ***.191.786 — Aluguel</td><td><span class="pill p-alg">Aluguel</span></td><td class="num gold">R$ 6.000,00</td></tr>
+      <tr><td>19/01</td><td>Pix 41.599.839</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 5.251,48</td></tr>
+      <tr><td>05/01</td><td>Pix ***.798.336</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 1.427,16</td></tr>
+      <tr><td>23/01</td><td>Pix 29.160.820 (×3)</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 1.005,20</td></tr>
+      <tr><td>23/01</td><td>Pix 17.992.846</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 990,89</td></tr>
+      <tr><td>30/01</td><td>Pix ***.279.597 + ***.798.336</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 1.328,80</td></tr>
+      <tr><td>23/01</td><td>Pix ***.930.957 + 63.797.354 + 01.416.295</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 600,60</td></tr>
+      <tr><td>12/01</td><td>Débito pacote serviços</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 30,85</td></tr>
+      <tr><td>—</td><td>Tarifas cobrança (diversas)</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 453,66</td></tr>
+      <tr class="sub"><td colspan="3">Total saídas</td><td class="num r">R$ 34.176,25</td></tr>
+      <tr class="grand"><td colspan="3">Saldo Jan/26</td><td class="num r">- R$ 25.742,46</td></tr>
+    </tbody></table>
+  </div>
+
+  <!-- FEV -->
+  <div id="mes-fev" style="display:none">
+    <div class="cards">
+      <div class="card"><div class="lbl">Entradas</div><div class="val v-green">R$ 16.909</div></div>
+      <div class="card"><div class="lbl">Energia EDP</div><div class="val v-orange">R$ 1.785</div></div>
+      <div class="card"><div class="lbl">Aluguel</div><div class="val v-gold">R$ 6.000</div></div>
+      <div class="card"><div class="lbl">Serviços + Tarifas</div><div class="val v-red">R$ 11.970</div></div>
+    </div>
+    <div class="section">Entradas — Fevereiro/26</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Tipo</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>04-05/02</td><td>PIX Recebido — Cielo (×2)</td><td><span class="pill p-ent">Cielo</span></td><td class="num g">R$ 95,69</td></tr>
+      <tr><td>05/02</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 126,68</td></tr>
+      <tr><td>06/02</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 788,34</td></tr>
+      <tr><td>10/02</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 128,84</td></tr>
+      <tr><td>11/02</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 363,76</td></tr>
+      <tr><td>19/02</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 2.910,83</td></tr>
+      <tr><td>24/02</td><td>PIX rec. — Alpha / Otimiza (×2) / Gotagua / Maria A.</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 2.368,17</td></tr>
+      <tr><td>25/02</td><td>PIX rec. — Andritz + Anhanguera Ferramentas</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 6.246,13</td></tr>
+      <tr><td>26/02</td><td>PIX rec. — Bluefun + MSE + CRÉD.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 1.866,16</td></tr>
+      <tr><td>27/02</td><td>CRÉD. + Infinity Brasil + Infinity Logística</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 2.014,02</td></tr>
+      <tr class="sub"><td colspan="3">Total entradas</td><td class="num g">R$ 16.908,62</td></tr>
+    </tbody></table>
+    <div class="section">Saídas — Fevereiro/26</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Categoria</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>03/02</td><td>Receita Federal — 00.394.460</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 10.625,03</td></tr>
+      <tr><td>27/02</td><td>Receita Federal — 00.394.460</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 5.279,35</td></tr>
+      <tr><td>20/02</td><td>DÉB.TIT.COMPE fiscal (×2)</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 1.246,47</td></tr>
+      <tr><td>19/02</td><td>DÉB.TIT.COMPE fiscal</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 1.042,54</td></tr>
+      <tr><td>18-27/02</td><td>Telecom DÉB.CONV (×2)</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 431,78</td></tr>
+      <tr><td>27/02</td><td>EDP — Pix 28.152.650 (×5)</td><td><span class="pill p-edp">Energia</span></td><td class="num orange">R$ 1.784,62</td></tr>
+      <tr><td>11/02</td><td>Pix ***.191.786 — Aluguel</td><td><span class="pill p-alg">Aluguel</span></td><td class="num gold">R$ 6.000,00</td></tr>
+      <tr><td>19/02</td><td>Pix ***.433.617 (×2)</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 3.000,00</td></tr>
+      <tr><td>06+27/02</td><td>Pix ***.798.336 (×2)</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 1.580,43</td></tr>
+      <tr><td>25/02</td><td>Pix 17.992.846</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 991,53</td></tr>
+      <tr><td>20/02</td><td>Pix 30.549.651</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 572,56</td></tr>
+      <tr><td>18/02</td><td>Pix 63.797.354 + Pix 29.160.820</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 320,51</td></tr>
+      <tr><td>06/02</td><td>Pix ***.098.116 + 49.406.419</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 555,00</td></tr>
+      <tr><td>11-12/02</td><td>Pix ***.982.227 + ***.930.957</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 440,00</td></tr>
+      <tr><td>10/02</td><td>Débito pacote serviços</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 30,85</td></tr>
+      <tr><td>—</td><td>Tarifas cobrança (diversas)</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 938,77</td></tr>
+      <tr class="sub"><td colspan="3">Total saídas</td><td class="num r">R$ 36.148,44</td></tr>
+      <tr class="grand"><td colspan="3">Saldo Fev/26</td><td class="num r">- R$ 19.239,82</td></tr>
+    </tbody></table>
+  </div>
+
+  <!-- MAR -->
+  <div id="mes-mar" style="display:none">
+    <div class="cards">
+      <div class="card"><div class="lbl">Entradas</div><div class="val v-green">R$ 29.621</div></div>
+      <div class="card"><div class="lbl">Energia EDP</div><div class="val v-orange">R$ 993</div></div>
+      <div class="card"><div class="lbl">Aluguel</div><div class="val v-gold">R$ 6.000</div></div>
+      <div class="card"><div class="lbl">Serviços + Tarifas</div><div class="val v-red">R$ 11.223</div></div>
+    </div>
+    <div class="section">Entradas — Março/26 (Sicoob + Itaú)</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Tipo</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>02/03</td><td>PIX rec. — Artur / Thais / Rayena / Max / Bem Barato / Manloc / Philipe / AF Cruz</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 3.939,43</td></tr>
+      <tr><td>03/03</td><td>PIX rec. — TR3 / T.L.G.L / RSantosDev + CRÉD.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 3.383,87</td></tr>
+      <tr><td>04/03</td><td>PIX rec. — Valerio + CRÉD.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 1.183,12</td></tr>
+      <tr><td>05/03</td><td>PIX rec. — Calel / HGA / Textil / Etel / ES Stones</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 1.539,09</td></tr>
+      <tr><td>06/03</td><td>PIX rec. — H T I / Previnsa / JFA + CRÉD. + rend.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 1.473,75</td></tr>
+      <tr><td>09/03</td><td>PIX rec. — Grande Vitoria + Thais</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 585,50</td></tr>
+      <tr><td>10/03</td><td>PIX rec. — Sillion / LCF / MSE Eng. / Luana / Sinoboom + CRÉD.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 2.149,92</td></tr>
+      <tr><td>11/03</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 492,61</td></tr>
+      <tr><td>13/03</td><td>PIX rec. — Bluefun / I P Cardoso / Ramalho / Delta Bike</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 2.923,23</td></tr>
+      <tr><td>16/03</td><td>PIX rec. — Direxlog / Logos / Ghisolfi / Cordenonsi / TR3 / Expresso + CRÉD.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 1.915,72</td></tr>
+      <tr><td>17/03</td><td>PIX rec. — YBY / Siao / Paulo Henrique + CRÉD.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 2.074,73</td></tr>
+      <tr><td>18/03</td><td>CRÉD.LIQUIDAÇÃO COBRANÇA</td><td><span class="pill p-ent">Cobrança</span></td><td class="num g">R$ 779,64</td></tr>
+      <tr><td>19/03</td><td>PIX rec. — Thais / Suzana / Unibens + CRÉD.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 3.111,59</td></tr>
+      <tr><td>20/03</td><td>PIX rec. — Otimiza / Medtech / JS Tech / Puzzle / CTA Ar / PHB / G4F</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 2.402,81</td></tr>
+      <tr><td>23/03</td><td>PIX rec. — Otimiza / Thais / Suzana / Gusmão</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 991,43</td></tr>
+      <tr><td>24/03</td><td>PIX rec. — Alpha Hidrometais + CRÉD.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 584,26</td></tr>
+      <tr><td>25/03</td><td>PIX rec. — Transmarks / Valerio / Gabriela</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 361,36</td></tr>
+      <tr><td>26/03</td><td>Recebimento — MSE Service + CRÉD.</td><td><span class="pill p-ent">Misto</span></td><td class="num g">R$ 749,00</td></tr>
+      <tr class="sub"><td colspan="3">Total entradas</td><td class="num g">R$ 32.743,27</td></tr>
+    </tbody></table>
+    <div class="section">Saídas — Março/26</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Categoria</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>20/03</td><td>Receita Federal — 00.394.460</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 5.102,76</td></tr>
+      <tr><td>23/03</td><td>DÉB.CONV.PREFEITURA</td><td><span class="pill p-imp">Imposto</span></td><td class="num blue">R$ 1.311,23</td></tr>
+      <tr><td>23/03</td><td>EDP — DÉB.TIT.COMPE ×3 boletos (R$ 283,60 + R$ 350,90 + R$ 358,73) — lançamentos 83432999, 83433000, 83433001</td><td><span class="pill p-edp">Energia</span></td><td class="num orange">R$ 993,23</td></tr>
+      <tr><td>23/03</td><td>CRM — DÉB.TIT.COMPE (lançamento 990,89) — Pix 17.992.846</td><td><span class="pill p-ser">CRM</span></td><td class="num r">R$ 990,89</td></tr>
+      <tr><td>11/03</td><td>Pix ***.191.786 — Aluguel</td><td><span class="pill p-alg">Aluguel</span></td><td class="num gold">R$ 6.000,00</td></tr>
+      <tr><td>05/03</td><td>Pix ***.798.336</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 1.532,59</td></tr>
+      <tr><td>06/03</td><td>DÉB.TÍTULO — Pão Jan/Fev</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 987,50</td></tr>
+      <tr><td>16/03</td><td>DÉB.TÍTULO COBRANÇA + DÉB.TIT.COMPE</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 654,88</td></tr>
+      <tr><td>11/03</td><td>Telecom DÉB.CONV (×2)</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 476,16</td></tr>
+      <tr><td>09/03</td><td>DÉB.TÍTULO COBRANÇA</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 260,84</td></tr>
+      <tr><td>10/03</td><td>Transf. Ronaldo de Almeida</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 259,50</td></tr>
+      <tr><td>16/03</td><td>Pix 63.797.354</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 246,39</td></tr>
+      <tr><td>23/03</td><td>Pix ***.930.957 + Pix 02.558.157</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 319,99</td></tr>
+      <tr><td>20/03</td><td>Pix 01.416.295</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 99,00</td></tr>
+      <tr><td>24/03</td><td>DÉB.SEGURO PRESTAMISTA</td><td><span class="pill p-ser">Serviço</span></td><td class="num r">R$ 23,59</td></tr>
+      <tr><td>05/03</td><td>Carone Laranjeiras (×3)</td><td><span class="pill p-cmp">Compra</span></td><td class="num r">R$ 396,64</td></tr>
+      <tr><td>17/03</td><td>Belo Balão e Festas</td><td><span class="pill p-cmp">Compra</span></td><td class="num r">R$ 19,00</td></tr>
+      <tr><td>03/03</td><td>Tar Plano Adapt 2 — Itaú</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 289,00</td></tr>
+      <tr><td>25/03</td><td>Tarifa renovação limite</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 40,00</td></tr>
+      <tr><td>10/03</td><td>Débito pacote serviços</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 30,85</td></tr>
+      <tr><td>—</td><td>Tarifas cobrança (diversas)</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 66,12</td></tr>
+      <tr class="sub"><td colspan="3">Total saídas</td><td class="num r">R$ 23.637,16</td></tr>
+      <tr class="grand"><td colspan="3">Saldo Mar/26</td><td class="num g">+ R$ 9.106,11</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ABA: MÚTUO ENJOY
+══════════════════════════════════════════ -->
+<div id="aba-mutuo" style="display:none">
+  <div class="note">Transferências entre empresas do grupo ENJOY — não contabilizadas como custo ou receita operacional.</div>
+  <div class="section">Movimentações de mútuo — todos os meses</div>
+  <table><thead><tr><th style="width:10%">Mês</th><th style="width:10%">Data</th><th style="width:10%">Banco</th><th style="width:42%">Descrição</th><th style="width:14%">Direção</th><th style="width:14%">Valor</th></tr></thead><tbody>
+    <tr><td>Dez/25</td><td>15/12</td><td>Sicoob</td><td>TRANSF. RECEBIDA — ENJOY ESCOLA DE NEGOCIOS</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 10.000,00</td></tr>
+    <tr><td>Dez/25</td><td>31/12</td><td>Sicoob</td><td>TRANSF. RECEBIDA — ENJOY ESCOLA DE NEGOCIOS</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 10.000,00</td></tr>
+    <tr class="sub"><td colspan="5">Dez/25 — líquido</td><td class="num g">+ R$ 20.000</td></tr>
+    <tr><td>Jan/26</td><td>05/01</td><td>Sicoob</td><td>TRANSF. RECEBIDA — ENJOY ESCOLA (R$ 30k)</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 30.000,00</td></tr>
+    <tr><td>Jan/26</td><td>05/01</td><td>Sicoob</td><td>PIX mesma tit. — ENJOY WORK (R$ 50k)</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 50.000,00</td></tr>
+    <tr><td>Jan/26</td><td>19/01</td><td>Sicoob</td><td>PIX mesma tit. — ENJOY WORK (R$ 45k)</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 45.000,00</td></tr>
+    <tr class="sub"><td colspan="5">Jan/26 — líquido</td><td class="num g">+ R$ 125.000</td></tr>
+    <tr><td>Fev/26</td><td>13/02</td><td>Sicoob</td><td>TRANSF. RECEBIDA — ENJOY ESCOLA DE NEGOCIOS</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 10.000,00</td></tr>
+    <tr><td>Fev/26</td><td>26/02</td><td>Sicoob</td><td>TRANSF. RECEBIDA — ENJOY ESCOLA MUTUO COWORK</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 10.000,00</td></tr>
+    <tr class="sub"><td colspan="5">Fev/26 — líquido</td><td class="num g">+ R$ 20.000</td></tr>
+    <tr><td>Mar/26</td><td>11/03</td><td>Sicoob</td><td>TRANSF. RECEBIDA — ENJOY ESCOLA (R$ 18k)</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 18.000,00</td></tr>
+    <tr><td>Mar/26</td><td>19/03</td><td>Sicoob</td><td>TRANSF. RECEBIDA — ENJOY ESCOLA devolução</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 12.000,00</td></tr>
+    <tr><td>Mar/26</td><td>19/03</td><td>Sicoob</td><td>PIX mesma tit. — ENJOY WORK</td><td><span class="pill p-ent">Recebido</span></td><td class="num g">R$ 5.370,59</td></tr>
+    <tr><td>Mar/26</td><td>18/03</td><td>Sicoob</td><td>TRANSF. PARA — ENJOY ESCOLA DE NEGOCIOS</td><td><span class="pill p-mut">Enviado</span></td><td class="num gold">R$ 12.000,00</td></tr>
+    <tr><td>Mar/26</td><td>20/03</td><td>Sicoob</td><td>TRANSF. PARA — ENJOY ESCOLA DE NEGOCIOS</td><td><span class="pill p-mut">Enviado</span></td><td class="num gold">R$ 30.000,00</td></tr>
+    <tr><td>Mar/26</td><td>06/03</td><td>Itaú</td><td>PIX ENVIADO — ENJOY ESCOLA DE NEGOCIOS</td><td><span class="pill p-mut">Enviado</span></td><td class="num gold">R$ 36.000,00</td></tr>
+    <tr><td>Mar/26</td><td>20/03</td><td>Itaú</td><td>PIX ENVIADO — ENJOY ESCOLA DE NEGOCIOS</td><td><span class="pill p-mut">Enviado</span></td><td class="num gold">R$ 50.000,00</td></tr>
+    <tr class="sub"><td colspan="5">Mar/26 — líquido</td><td class="num gold">- R$ 64.629</td></tr>
+  </tbody></table>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ABA: EXCLUÍDOS
+══════════════════════════════════════════ -->
+<div id="aba-excluidos" style="display:none">
+  <div class="note">Lançamentos removidos da análise operacional e o motivo de cada exclusão.</div>
+  <div class="section">Resumo das exclusões</div>
+  <table><thead><tr><th style="width:18%">Categoria</th><th style="width:10%">Mês</th><th style="width:40%">Descrição</th><th style="width:18%">Valor</th><th style="width:14%">Motivo</th></tr></thead><tbody>
+    <tr><td>Mútuo ENJOY</td><td>Todos</td><td>Transferências para/de contas com "ENJOY"</td><td class="num gold">Ver aba Mútuo</td><td>Entre empresas</td></tr>
+    <tr><td>Israel Feriane</td><td>Mar/26</td><td>Saídas para Israel Feriane (TED + PIX — Sicoob e Itaú)</td><td class="num gold">R$ 100.000,00</td><td>Op. excluída</td></tr>
+    <tr><td>Cartão crédito</td><td>Jan/26</td><td>Boleto Intercredis — pagamento cartão</td><td class="num r">R$ 93.722,08</td><td>Pgto. cartão</td></tr>
+    <tr><td>Cartão crédito</td><td>Fev/26</td><td>Boleto Intercredis — pagamento cartão (×2)</td><td class="num r">R$ 125.902,33</td><td>Pgto. cartão</td></tr>
+    <tr><td>Cartão crédito</td><td>Mar/26</td><td>Boleto Intercredis — pagamento cartão</td><td class="num r">R$ 20.000,00</td><td>Pgto. cartão</td></tr>
+    <tr><td>Empréstimo fixo</td><td>Todos</td><td>DÉB.EMPRÉSTIMO Sicoob — R$ 13.789,49 × 4 meses</td><td class="num r">R$ 55.157,96</td><td>Financiamento</td></tr>
+    <tr class="grand"><td colspan="3">Total removido da análise</td><td class="num r">R$ 397.905,08</td><td>—</td></tr>
+  </tbody></table>
+</div>
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  Enjoy Work Coworking LTDA · CNPJ 45.759.346/0001-06 · Relatório interno · Dez/25 – Mar/26
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+// DADOS — atualizar aqui a cada novo mês
+// ══════════════════════════════════════════
+const M   = ['Dez/25','Jan/26','Fev/26','Mar/26'];
+const ent = [11552.94, 8433.79, 16908.62, 32743.27];
+const imp = [4071.55,  7588.22, 17161.17, 6413.99];
+const alg = [6000,     6000,    6000,     6000];
+const edp = [1474.08,  1122.45, 1784.62,  993.23];
+const srv = [9341.28,  17120.73,10232.82, 8813.82];
+const tar = [1572.36,  1484.85, 969.83,   1416.12];
+const tel = [206.42,   438.74,  431.78,   476.16];
+const prf = [0,        1668.95, 0,        1311.23];
+
+// calculados automaticamente
+const cst = imp.map((v,i) => v + alg[i] + edp[i] + srv[i] + tar[i]);
+const sld = ent.map((e,i) => e - cst[i]);
+
+// ══════════════════════════════════════════
+// CORES
+// ══════════════════════════════════════════
+const GD='#B18C54', BL='#2F5E8F', RD='#E07070', GR='#5A6A74';
+const GN='#6DC49A', OR='#E8A04A', PU='#7F77DD', LB='#6EA8D8';
+const tc='rgba(177,140,84,0.65)', gc='rgba(255,255,255,0.05)';
+
+const fmt = v => 'R$\u00A0' + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pct = (a,b) => b==null ? '—' : ((((a-b)/b)*100 >= 0 ? '+' : '') + (((a-b)/b)*100).toFixed(1) + '%');
+
+// ══════════════════════════════════════════
+// PREENCHER TABELAS
+// ══════════════════════════════════════════
+document.getElementById('tbody-resumo').innerHTML = M.map((m,i) => {
+  const vE = pct(ent[i], i>0?ent[i-1]:null);
+  const vC = pct(cst[i], i>0?cst[i-1]:null);
+  const s  = sld[i];
+  const bgE = vE.startsWith('+') ? 'rgba(109,196,154,0.12)' : vE==='—' ? 'rgba(255,255,255,0.05)' : 'rgba(224,112,112,0.12)';
+  const clE = vE.startsWith('+') ? GN : vE==='—' ? '#888' : RD;
+  const bgC = vC.startsWith('+') ? 'rgba(224,112,112,0.12)' : vC==='—' ? 'rgba(255,255,255,0.05)' : 'rgba(109,196,154,0.12)';
+  const clC = vC.startsWith('+') ? RD : vC==='—' ? '#888' : GN;
+  return `<tr>
+    <td><strong style="color:#E8E4DC">${m}</strong></td>
+    <td style="color:${GN};font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12px">${fmt(ent[i])}</td>
+    <td style="color:${RD};font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12px">${fmt(cst[i])}</td>
+    <td style="color:${s>=0?GN:RD};font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12px">${s<0?'- ':'+ '}${fmt(s)}</td>
+    <td><span style="display:inline-block;font-size:10px;padding:3px 9px;border-radius:4px;font-weight:600;background:${bgE};color:${clE}">${vE}</span></td>
+    <td><span style="display:inline-block;font-size:10px;padding:3px 9px;border-radius:4px;font-weight:600;background:${bgC};color:${clC}">${vC}</span></td>
+  </tr>`;
+}).join('');
+
+document.getElementById('tbody-cat').innerHTML = M.map((m,i) => {
+  const t = cst[i];
+  const p = v => `<span style="font-size:10px;color:#5A6A74"> ${((v/t)*100).toFixed(0)}%</span>`;
+  return `<tr>
+    <td><strong style="color:#E8E4DC">${m}</strong></td>
+    <td style="color:${LB};font-weight:600;font-size:12px;font-family:'JetBrains Mono',monospace">${fmt(imp[i])}${p(imp[i])}</td>
+    <td style="color:${GD};font-weight:600;font-size:12px;font-family:'JetBrains Mono',monospace">${fmt(alg[i])}${p(alg[i])}</td>
+    <td style="color:${OR};font-weight:600;font-size:12px;font-family:'JetBrains Mono',monospace">${fmt(edp[i])}${p(edp[i])}</td>
+    <td style="color:${RD};font-weight:600;font-size:12px;font-family:'JetBrains Mono',monospace">${fmt(srv[i])}${p(srv[i])}</td>
+    <td style="color:#9BA8B0;font-weight:600;font-size:12px;font-family:'JetBrains Mono',monospace">${fmt(tar[i])}${p(tar[i])}</td>
+    <td style="color:#E8E4DC;font-weight:700;font-size:12px;font-family:'JetBrains Mono',monospace">${fmt(t)}</td>
+  </tr>`;
+}).join('');
+
+// ══════════════════════════════════════════
+// GRÁFICOS
+// ══════════════════════════════════════════
+const base = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { ticks: { color: tc, font: { size: 12, family: 'Sora' } }, grid: { color: gc } },
+    y: { ticks: { color: tc, font: { size: 11 }, callback: v => 'R$'+(v/1000).toFixed(0)+'k' }, grid: { color: gc } }
+  }
+};
+
+new Chart(document.getElementById('chart-resumo'), {
+  type: 'bar',
+  data: { labels: M, datasets: [
+    { label: 'Entradas', data: ent, backgroundColor: BL+'77', borderColor: BL, borderWidth: 1.5, borderRadius: 5 },
+    { label: 'Custos',   data: cst, backgroundColor: RD+'44', borderColor: RD, borderWidth: 1.5, borderRadius: 5 },
+    { label: 'Saldo', type: 'line', data: sld, borderColor: GD, borderWidth: 2.5,
+      pointRadius: 5, pointBackgroundColor: GD, tension: 0.35, fill: false }
+  ]},
+  options: { ...base }
+});
+
+new Chart(document.getElementById('chart-edp'), {
+  type: 'bar',
+  data: { labels: M, datasets: [
+    { label: 'EDP', data: edp,
+      backgroundColor: [OR+'BB', OR+'88', OR, OR+'66'],
+      borderColor: OR, borderWidth: 1.5, borderRadius: 5 }
+  ]},
+  options: { ...base }
+});
+
+new Chart(document.getElementById('chart-aluguel'), {
+  type: 'bar',
+  data: { labels: M, datasets: [
+    { label: 'Aluguel', data: alg, backgroundColor: GD+'77', borderColor: GD, borderWidth: 1.5, borderRadius: 5 }
+  ]},
+  options: { ...base }
+});
+
+new Chart(document.getElementById('chart-fixos-total'), {
+  type: 'bar',
+  data: { labels: M, datasets: [
+    { label: 'EDP',       data: edp, backgroundColor: OR, borderRadius: 4, stack: 's' },
+    { label: 'Aluguel',   data: alg, backgroundColor: GD, stack: 's' },
+    { label: 'Telecom',   data: tel, backgroundColor: LB, stack: 's' },
+    { label: 'Prefeitura',data: prf, backgroundColor: PU, stack: 's' }
+  ]},
+  options: { ...base, scales: {
+    x: { ...base.scales.x, stacked: true },
+    y: { ...base.scales.y, stacked: true }
+  }}
+});
+
+new Chart(document.getElementById('chart-cat'), {
+  type: 'bar',
+  data: { labels: M, datasets: [
+    { label: 'Impostos', data: imp, backgroundColor: BL, borderRadius: 4, stack: 's' },
+    { label: 'Aluguel',  data: alg, backgroundColor: GD, stack: 's' },
+    { label: 'EDP',      data: edp, backgroundColor: OR, stack: 's' },
+    { label: 'Serviços', data: srv, backgroundColor: RD, stack: 's' },
+    { label: 'Tarifas',  data: tar, backgroundColor: GR, stack: 's' }
+  ]},
+  options: { ...base, scales: {
+    x: { ...base.scales.x, stacked: true },
+    y: { ...base.scales.y, stacked: true }
+  }}
+});
+
+new Chart(document.getElementById('chart-pct'), {
+  type: 'bar',
+  data: { labels: M, datasets: [
+    { label: 'Impostos %', data: imp.map((v,i) => +((v/cst[i])*100).toFixed(1)), backgroundColor: BL, borderRadius: 4, stack: 's' },
+    { label: 'Aluguel %',  data: alg.map((v,i) => +((v/cst[i])*100).toFixed(1)), backgroundColor: GD, stack: 's' },
+    { label: 'EDP %',      data: edp.map((v,i) => +((v/cst[i])*100).toFixed(1)), backgroundColor: OR, stack: 's' },
+    { label: 'Serviços %', data: srv.map((v,i) => +((v/cst[i])*100).toFixed(1)), backgroundColor: RD, stack: 's' },
+    { label: 'Tarifas %',  data: tar.map((v,i) => +((v/cst[i])*100).toFixed(1)), backgroundColor: GR, stack: 's' }
+  ]},
+  options: { ...base, scales: {
+    x: { ...base.scales.x, stacked: true },
+    y: { ticks: { color: tc, font: { size: 11 }, callback: v => v + '%' }, grid: { color: gc }, stacked: true, max: 100 }
+  }}
+});
+
+// ══════════════════════════════════════════
+// NAVEGAÇÃO
+// ══════════════════════════════════════════
+function goTo(v, btn) {
+  ['resumo','fixos','categorias','lancamentos','mutuo','excluidos'].forEach(id => {
+    document.getElementById('aba-' + id).style.display = id === v ? '' : 'none';
+  });
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goMes(v, btn) {
+  ['dez','jan','fev','mar'].forEach(id => {
+    document.getElementById('mes-' + id).style.display = id === v ? '' : 'none';
+  });
+  document.querySelectorAll('.mes-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
