@@ -283,10 +283,10 @@ tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background:
 ══════════════════════════════════════════ -->
 <div id="aba-resumo">
   <div class="cards">
-    <div class="card"><div class="lbl">Melhor mês (entradas)</div><div class="val v-gold">Mar/26</div></div>
-    <div class="card"><div class="lbl">Menor custo op.</div><div class="val v-green">Dez/25</div></div>
-    <div class="card"><div class="lbl">Maior custo op.</div><div class="val v-red">Fev/26</div></div>
-    <div class="card"><div class="lbl">Tendência</div><div class="val v-green">Melhorando ↑</div></div>
+    <div class="card"><div class="lbl">Melhor mês (entradas)</div><div class="val v-gold" id="card-melhor-ent">—</div></div>
+    <div class="card"><div class="lbl">Menor custo op.</div><div class="val v-green" id="card-menor-cst">—</div></div>
+    <div class="card"><div class="lbl">Maior custo op.</div><div class="val v-red" id="card-maior-cst">—</div></div>
+    <div class="card"><div class="lbl">Tendência</div><div class="val v-green" id="card-tendencia">—</div></div>
   </div>
 
   <div class="section">Custos fixos recorrentes — visão rápida</div>
@@ -635,11 +635,12 @@ tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background:
   <!-- FEV -->
   <div id="mes-fev" style="display:none">
     <div class="cards">
-      <div class="card"><div class="lbl">Entradas</div><div class="val v-green">R$ 27.473</div></div>
+      <div class="card"><div class="lbl">Entradas</div><div class="val v-green">R$ 58.668</div></div>
       <div class="card"><div class="lbl">Aluguel salas Escola</div><div class="val v-gold">R$ 10.000</div></div>
       <div class="card"><div class="lbl">Energia EDP</div><div class="val v-orange">R$ 1.785</div></div>
-      <div class="card"><div class="lbl">Serviços + Tarifas</div><div class="val v-red">R$ 12.010</div></div>
+      <div class="card"><div class="lbl">Retirada sócio</div><div class="val v-red">R$ 20.000</div></div>
     </div>
+    <div class="note">Itaú 0099825-2 integrado — Fev/26 completo. Retirada de sócio R$ 20.000 (12/02 — WANDERLUCIO DE AVILA MIRANDA) classificada separadamente, fora do custo operacional.</div>
     <div class="section">Entradas — Fevereiro/26 (Sicoob 293.538-4)</div>
     <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Tipo</th><th style="width:24%">Valor</th></tr></thead><tbody>
       <tr><td>04-05/02</td><td>PIX Recebido — Cielo (×2)</td><td><span class="pill p-ent">Cielo</span></td><td class="num g">R$ 95,69</td></tr>
@@ -663,7 +664,39 @@ tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background:
     <div class="section">Entradas — Fevereiro/26 (Aluguel de salas — Enjoy Escola)</div>
     <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Tipo</th><th style="width:24%">Valor</th></tr></thead><tbody>
       <tr><td>13/02</td><td>TRANSF. RECEBIDA — ENJOY ESCOLA DE NEGOCIOS (aluguel salas)</td><td><span class="pill p-alg">Aluguel</span></td><td class="num gold">R$ 10.000,00</td></tr>
-      <tr class="grand"><td colspan="3">Total entradas combinado Fev/26</td><td class="num g">R$ 27.472,62</td></tr>
+      <tr class="sub"><td colspan="3">Total entradas — Aluguel salas Escola</td><td class="num gold">R$ 10.000,00</td></tr>
+    </tbody></table>
+    <div class="section">Entradas — Fevereiro/26 (Itaú 0099825-2)</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Tipo</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>02/02</td><td>PIX rec. — MANLOC + T.L.G.L + HYPNOS + ANDRITZ + GDTEC + MAX BRASIL + BEM BARATO + MARLON</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 3.329,85</td></tr>
+      <tr><td>03/02</td><td>PIX rec. — MARLON + rendimentos (R$ 0,03)</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 4,03</td></tr>
+      <tr><td>04/02</td><td>PIX rec. — RSANTOSDEV + SILLION</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 2.650,13</td></tr>
+      <tr><td>05/02</td><td>PIX rec. — ANDRITZ + TEXTIL + EVSA + CALEL + ETEL + ES STONES</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 2.409,52</td></tr>
+      <tr><td>06/02</td><td>PIX rec. — BEERORCOFFEE + JFA + HGA + MSE ENG. + POLIANE</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 1.133,73</td></tr>
+      <tr><td>09/02</td><td>PIX rec. — H T I</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 104,11</td></tr>
+      <tr><td>10/02</td><td>PIX rec. — OTIMIZA + TRANSMARKS + SINOBOOM</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 1.328,64</td></tr>
+      <tr><td>11/02</td><td>PIX rec. — BRENDA + SIAO PETROLEO</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 663,11</td></tr>
+      <tr><td>12/02</td><td>PIX rec. — IPLUS + FENIX PREMOLDADOS + rendimentos (R$ 1,41)</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 515,17</td></tr>
+      <tr><td>13/02</td><td>PIX rec. — GHISOLFI + LCF CARGO + JS TECH + BLUEFUN + DIREXLOG + PREVINSA + LUCAS</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 2.338,49</td></tr>
+      <tr><td>18/02</td><td>PIX rec. — TRANSMARKS + TECPLAN + FENIX + CENTRO-AVANTE + CORDENONSI + LUANNA + EXPRESSO</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 1.756,36</td></tr>
+      <tr><td>19/02</td><td>PIX rec. — SUZANA</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 107,19</td></tr>
+      <tr><td>20/02</td><td>PIX rec. — NAYARA + NATURAL CHEM + JHP + CTA AR + MEDTECH + P H B JR + VALERIO + G4F</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 2.684,51</td></tr>
+      <tr><td>23/02</td><td>PIX rec. — TRANSMARKS + RODRIGO PACHECO + YBY PLANEJ. + GUSMAO</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 2.297,07</td></tr>
+      <tr><td>24/02</td><td>PIX rec. — MARIA AUXILIADORA + OTIMIZA (×2) + GOTAGUA + ALPHA</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 2.368,17</td></tr>
+      <tr><td>25/02</td><td>PIX rec. — ANDRITZ + ANHANGUERA</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 6.246,13</td></tr>
+      <tr><td>26/02</td><td>PIX rec. — BLUEFUN + MSE SERVICE</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 390,41</td></tr>
+      <tr><td>27/02</td><td>PIX rec. — INFINITY BRASIL + INFINITY LOGÍSTICA</td><td><span class="pill p-ent">PIX rec.</span></td><td class="num g">R$ 868,82</td></tr>
+      <tr class="sub"><td colspan="3">Total entradas — Itaú 0099825-2</td><td class="num g">R$ 31.195,84</td></tr>
+      <tr class="grand"><td colspan="3">Total entradas combinado Fev/26</td><td class="num g">R$ 58.668,46</td></tr>
+    </tbody></table>
+    <div class="section">Saídas — Fevereiro/26 (Itaú 0099825-2)</div>
+    <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Categoria</th><th style="width:24%">Valor</th></tr></thead><tbody>
+      <tr><td>03/02</td><td>TAR PLANO ADAPT 2 — Itaú</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 279,00</td></tr>
+      <tr><td>10/02</td><td>COMPRA DÉBITO — CARONE LARANJEIRAS</td><td><span class="pill p-cmp">Compra</span></td><td class="num r">R$ 76,92</td></tr>
+      <tr><td>10/02</td><td>COMPRA DÉBITO — VENANCIO PAPELARIA (×2)</td><td><span class="pill p-cmp">Compra</span></td><td class="num r">R$ 6,60</td></tr>
+      <tr><td>13/02</td><td>COMPRA DÉBITO — LACE EMPREENDIMENTOS</td><td><span class="pill p-cmp">Compra</span></td><td class="num r">R$ 40,41</td></tr>
+      <tr><td>13/02</td><td>COMPRA DÉBITO — VENANCIO PAPELARIA</td><td><span class="pill p-cmp">Compra</span></td><td class="num r">R$ 2,99</td></tr>
+      <tr><td>12/02</td><td>PIX ENVIADO — WANDERLUCIO DE AVILA MIRANDA (CPF 133.690.717-70) — retirada de sócio</td><td><span class="pill" style="background:rgba(177,140,84,0.2);color:var(--gd);border:1px solid var(--gd)">Sócio</span></td><td class="num gold">R$ 20.000,00</td></tr>
     </tbody></table>
     <div class="section">Saídas — Fevereiro/26</div>
     <table><thead><tr><th style="width:12%">Data</th><th style="width:50%">Descrição</th><th style="width:14%">Categoria</th><th style="width:24%">Valor</th></tr></thead><tbody>
@@ -685,7 +718,7 @@ tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background:
       <tr><td>—</td><td>Tarifas cobrança (diversas)</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 938,77</td></tr>
       <tr class="sub"><td colspan="3">Total saídas — Sicoob 293.538-4</td><td class="num r">R$ 36.148,44</td></tr>
       <tr><td>18/02</td><td>Cesta de Relacionamento (Sicredi 78197-1)</td><td><span class="pill p-tar">Tarifa</span></td><td class="num">R$ 39,90</td></tr>
-      <tr class="grand"><td colspan="3">Saldo Fev/26</td><td class="num g">+ R$ 1.284,28</td></tr>
+      <tr class="grand"><td colspan="3">Saldo Fev/26</td><td class="num g">+ R$ 22.074,20</td></tr>
     </tbody></table>
   </div>
 
@@ -800,7 +833,8 @@ tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background:
     <tr><td>Cartão crédito</td><td>Fev/26</td><td>Boleto Intercredis — pagamento cartão (×2)</td><td class="num r">R$ 125.902,33</td><td>Pgto. cartão</td></tr>
     <tr><td>Cartão crédito</td><td>Mar/26</td><td>Boleto Intercredis — pagamento cartão</td><td class="num r">R$ 20.000,00</td><td>Pgto. cartão</td></tr>
     <tr><td>Empréstimo fixo</td><td>Todos</td><td>DÉB.EMPRÉSTIMO Sicoob — R$ 13.789,49 × 4 meses</td><td class="num r">R$ 55.157,96</td><td>Financiamento</td></tr>
-    <tr class="grand"><td colspan="3">Total removido da análise</td><td class="num r">R$ 397.905,08</td><td>—</td></tr>
+    <tr><td>Retirada sócio</td><td>Fev/26</td><td>PIX WANDERLUCIO DE AVILA MIRANDA (CPF 133.690.717-70) — Itaú 12/02</td><td class="num gold">R$ 20.000,00</td><td>Retirada de sócio</td></tr>
+    <tr class="grand"><td colspan="3">Total removido da análise</td><td class="num r">R$ 417.905,08</td><td>—</td></tr>
   </tbody></table>
 </div>
 
@@ -820,22 +854,37 @@ const M   = ['Dez/25','Jan/26','Fev/26','Mar/26'];
 // Dez: 11552.94 + 839.08(ON TIME 399+MAGAZINE 440.08)
 // Dez: Sicoob 11.552,94 + Sicredi 839,08 + Itaú 39.608,43 + Aluguel Escola 15/12 10.000
 // Jan: Sicoob 8.433,79 + Sicredi 892,65 + Itaú 46.392,45 (inclui Aluguel Escola 16/01 10k)
-// Fev: Sicoob 16.908,62 + Sicredi 564,00 + Itaú parcial + Aluguel Escola 13/02 10k
+// Fev: Sicoob 16.908,62 + Sicredi 564,00 + Itaú 31.195,84 + Aluguel Escola 13/02 10k
 // Mar: Sicoob+Itaú 32.743,27 + Sicredi 563,55
-const ent = [62000.45, 55718.89, 27472.62, 33306.82];
+const ent = [62000.45, 55718.89, 58668.46, 33306.82];
 const imp = [4071.55,  7588.22,  17161.17, 6413.99];
 const alg = [6000,     6000,     6000,     6000];
 const edp = [1474.08,  1122.45,  1784.62,  993.23];
-// srv: Jan +7.590 Mega Divisórias (Itaú 07/01)
-const srv = [9389.23,  24771.18, 10232.82, 8813.82];
-// tar: Dez +279 TAR PLANO ADAPT Itaú (02/12) | Jan +279 TAR PLANO ADAPT Itaú (05/01)
-const tar = [1891.26,  1803.75,  1009.73,  1456.02];
+// srv: Jan +7.590 Mega Divisórias (Itaú 07/01) | Fev +126,92 compras Itaú
+const srv = [9389.23,  24771.18, 10359.74, 8813.82];
+// tar: Dez +279 Itaú | Jan +279 Itaú | Fev +279 Itaú
+const tar = [1891.26,  1803.75,  1288.73,  1456.02];
 const tel = [206.42,   438.74,   431.78,   476.16];
 const prf = [0,        1668.95,  0,        1311.23];
 
 // calculados automaticamente
 const cst = imp.map((v,i) => v + alg[i] + edp[i] + srv[i] + tar[i]);
 const sld = ent.map((e,i) => e - cst[i]);
+
+// ── Cards dinâmicos ──
+const idxMelhorEnt  = ent.indexOf(Math.max(...ent));
+const idxMenorCst   = cst.indexOf(Math.min(...cst));
+const idxMaiorCst   = cst.indexOf(Math.max(...cst));
+const tendencia     = sld[sld.length-1] > sld[sld.length-2] ? 'Melhorando ↑' : 'Queda ↓';
+const corTend       = sld[sld.length-1] > sld[sld.length-2] ? '#6DC49A' : '#E07070';
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('card-melhor-ent').textContent  = M[idxMelhorEnt];
+  document.getElementById('card-menor-cst').textContent   = M[idxMenorCst];
+  document.getElementById('card-maior-cst').textContent   = M[idxMaiorCst];
+  const ct = document.getElementById('card-tendencia');
+  ct.textContent = tendencia;
+  ct.style.color = corTend;
+});
 
 // ══════════════════════════════════════════
 // CORES
