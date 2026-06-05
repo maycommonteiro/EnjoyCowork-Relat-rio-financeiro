@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enjoy Work Coworking — Relatório Financeiro</title>
+<title>Painel Executivo de Performance Financeira</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -165,6 +165,33 @@ body {
   margin: 1rem 0;
 }
 
+/* ── INSIGHTS ── */
+.insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.insight-icon {
+  font-size: 16px;
+  min-width: 20px;
+  margin-top: 1px;
+}
+.insight-text strong {
+  color: var(--gd);
+  font-weight: 600;
+}
+.insight.positive { border-left: 2px solid #6DC49A; }
+.insight.negative { border-left: 2px solid #E07070; }
+.insight.neutral  { border-left: 2px solid #B18C54; }
+.insight.alert    { border-left: 2px solid #E8A04A; }
+
 /* ── LEGEND ── */
 .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 0.75rem; font-size: 12px; color: var(--text2); }
 .dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 5px; vertical-align: middle; }
@@ -256,7 +283,7 @@ tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background:
   <div class="logo-area">
     <div class="logo-bar"></div>
     <div>
-      <div class="logo-title">Enjoy Work Coworking — Relatório Financeiro</div>
+      <div class="logo-title">Painel Executivo de Performance Financeira</div>
       <div class="logo-sub">CNPJ 45.759.346/0001-06 · Sicoob 293.538-4 + Sicredi 78197-1 + Itaú · Dez/25 a Mar/26</div>
     </div>
   </div>
@@ -289,7 +316,13 @@ tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background:
     <div class="card"><div class="lbl">Tendência</div><div class="val v-green" id="card-tendencia">—</div></div>
   </div>
 
-  <div class="section">Custos fixos recorrentes — visão rápida</div>
+  <div class="section">Tendência de performance</div>
+  <div class="legend">
+    <span><span class="dot" style="background:#B18C54"></span>Entradas</span>
+    <span><span class="dot" style="background:#6DC49A"></span>Saldo líquido</span>
+    <span><span class="dot" style="background:rgba(177,140,84,0.35)"></span>Linha de tendência</span>
+  </div>
+  <div class="chart-wrap" style="height:220px"><canvas id="chart-tendencia"></canvas></div>
   <div class="cards-fixos">
     <div class="card-fixo c-orange">
       <div class="nome">Energia elétrica — EDP</div>
@@ -332,6 +365,10 @@ tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background:
     <tbody id="tbody-resumo"></tbody>
   </table>
   <div class="note">Excluídos: mútuo ENJOY, Israel Feriane, boletos Intercredis/cartão e empréstimo fixo Sicoob R$ 13.789,49/mês.</div>
+
+  <div class="divider"></div>
+  <div class="section">Insights executivos</div>
+  <div id="insights-container" style="display:flex;flex-direction:column;gap:10px;margin-bottom:1rem"></div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -841,7 +878,7 @@ tr.grand td { border-top: 1px solid var(--border); font-weight: 700; background:
 </div><!-- /content -->
 
 <footer class="site-footer">
-  Enjoy Work Coworking LTDA · CNPJ 45.759.346/0001-06 · Relatório interno · Dez/25 – Mar/26
+  Enjoy Work Coworking LTDA · CNPJ 45.759.346/0001-06 · Painel Executivo de Performance Financeira · Dez/25 – Mar/26
 </footer>
 
 <script>
@@ -884,6 +921,60 @@ document.addEventListener('DOMContentLoaded', () => {
   const ct = document.getElementById('card-tendencia');
   ct.textContent = tendencia;
   ct.style.color = corTend;
+
+  // ── Insights executivos ──────────────────────────────
+  const f = v => 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
+  const insights = [];
+
+  // 1. Melhor mês em entradas
+  const maxEnt = Math.max(...ent);
+  const iMaxEnt = ent.indexOf(maxEnt);
+  insights.push({ tipo: 'positive', icon: '📈',
+    texto: `<strong>${M[iMaxEnt]}</strong> foi o melhor mês em entradas — <strong>${f(maxEnt)}</strong>, resultado da integração das três contas bancárias com volume expressivo de clientes.` });
+
+  // 2. Variação entre melhor e pior mês de entradas
+  const minEnt = Math.min(...ent);
+  const iMinEnt = ent.indexOf(minEnt);
+  const varEnt = ((maxEnt - minEnt) / minEnt * 100).toFixed(0);
+  insights.push({ tipo: 'neutral', icon: '↕️',
+    texto: `A amplitude entre o melhor e o pior mês de entradas foi de <strong>${varEnt}%</strong> — ${M[iMaxEnt]} (${f(maxEnt)}) contra ${M[iMinEnt]} (${f(minEnt)}). Reduzir essa oscilação é um indicador de maturidade operacional.` });
+
+  // 3. Impostos — mês mais pesado
+  const iMaxImp = imp.indexOf(Math.max(...imp));
+  const pctImp = ((imp[iMaxImp] / cst[iMaxImp]) * 100).toFixed(0);
+  insights.push({ tipo: 'alert', icon: '⚠️',
+    texto: `Em <strong>${M[iMaxImp]}</strong>, os impostos representaram <strong>${pctImp}%</strong> do custo total — o maior peso tributário do período, com <strong>${f(imp[iMaxImp])}</strong> pagos à Receita Federal.` });
+
+  // 4. Evolução do saldo
+  const sldPos = sld.filter(s => s > 0).length;
+  const melhorSaldo = Math.max(...sld);
+  const iMelhorSaldo = sld.indexOf(melhorSaldo);
+  insights.push({ tipo: sldPos >= 3 ? 'positive' : 'neutral', icon: '💰',
+    texto: `<strong>${sldPos} de ${M.length} meses</strong> encerraram com saldo positivo. O melhor resultado foi em <strong>${M[iMelhorSaldo]}</strong> com <strong>${f(melhorSaldo)}</strong> de saldo líquido.` });
+
+  // 5. Aluguel de salas — inadimplência
+  const mesesSemAluguel = ['Jan/26', 'Mar/26'];
+  if (mesesSemAluguel.length > 0) {
+    insights.push({ tipo: 'negative', icon: '🏢',
+      texto: `O aluguel de salas da Enjoy Escola <strong>não foi recebido</strong> em <strong>${mesesSemAluguel.join(' e ')}</strong> — total não realizado de <strong>R$ 20.000</strong>. Regularizar esse fluxo impacta diretamente a previsibilidade de receita.` });
+  }
+
+  // 6. Tendência geral
+  const varUltimos = ((sld[sld.length-1] - sld[0]) / Math.abs(sld[0]) * 100).toFixed(0);
+  const tipoTend = sld[sld.length-1] > sld[0] ? 'positive' : 'negative';
+  const textoTend = sld[sld.length-1] > sld[0]
+    ? `O saldo líquido evoluiu <strong>+${varUltimos}%</strong> de ${M[0]} a ${M[M.length-1]}, sinalizando uma trajetória positiva de crescimento e controle de custos.`
+    : `O saldo líquido recuou <strong>${varUltimos}%</strong> de ${M[0]} a ${M[M.length-1]}. Atenção à evolução dos custos nos próximos meses.`;
+  insights.push({ tipo: tipoTend, icon: tipoTend === 'positive' ? '🚀' : '📉', texto: textoTend });
+
+  // Renderizar
+  const container = document.getElementById('insights-container');
+  insights.forEach(ins => {
+    const div = document.createElement('div');
+    div.className = `insight ${ins.tipo}`;
+    div.innerHTML = `<span class="insight-icon">${ins.icon}</span><span class="insight-text">${ins.texto}</span>`;
+    container.appendChild(div);
+  });
 });
 
 // ══════════════════════════════════════════
@@ -954,6 +1045,109 @@ new Chart(document.getElementById('chart-resumo'), {
   ]},
   options: { ...base }
 });
+
+// ── Gráfico de Tendência ──────────────────────────────
+(function() {
+  // Regressão linear simples para calcular linha de tendência
+  function linReg(data) {
+    const n = data.length;
+    const xs = data.map((_,i) => i);
+    const sumX  = xs.reduce((a,b) => a+b, 0);
+    const sumY  = data.reduce((a,b) => a+b, 0);
+    const sumXY = xs.reduce((s,x,i) => s + x*data[i], 0);
+    const sumX2 = xs.reduce((s,x) => s + x*x, 0);
+    const m = (n*sumXY - sumX*sumY) / (n*sumX2 - sumX*sumX);
+    const b = (sumY - m*sumX) / n;
+    return xs.map(x => m*x + b);
+  }
+
+  const trendEnt = linReg(ent);
+  const trendSld = linReg(sld);
+
+  new Chart(document.getElementById('chart-tendencia'), {
+    type: 'line',
+    data: {
+      labels: M,
+      datasets: [
+        {
+          label: 'Entradas',
+          data: ent,
+          borderColor: GD,
+          backgroundColor: GD+'22',
+          borderWidth: 2.5,
+          pointRadius: 6,
+          pointBackgroundColor: GD,
+          pointBorderColor: '#00131F',
+          pointBorderWidth: 2,
+          tension: 0.3,
+          fill: true,
+          order: 2
+        },
+        {
+          label: 'Saldo líquido',
+          data: sld,
+          borderColor: GN,
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointRadius: 5,
+          pointBackgroundColor: GN,
+          pointBorderColor: '#00131F',
+          pointBorderWidth: 2,
+          tension: 0.3,
+          fill: false,
+          order: 2
+        },
+        {
+          label: 'Tend. entradas',
+          data: trendEnt,
+          borderColor: GD+'55',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          tension: 0,
+          fill: false,
+          order: 1
+        },
+        {
+          label: 'Tend. saldo',
+          data: trendSld,
+          borderColor: GN+'55',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          tension: 0,
+          fill: false,
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.dataset.label.startsWith('Tend')) return null;
+              return ` ${ctx.dataset.label}: R$ ${Math.abs(ctx.parsed.y).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0})}`;
+            }
+          },
+          filter: item => !item.dataset.label.startsWith('Tend')
+        }
+      },
+      scales: {
+        x: { ticks: { color: tc, font: { size: 12, family: 'Sora' } }, grid: { color: gc } },
+        y: {
+          ticks: { color: tc, font: { size: 11 }, callback: v => 'R$'+(v/1000).toFixed(0)+'k' },
+          grid: { color: gc }
+        }
+      }
+    }
+  });
+})();
 
 new Chart(document.getElementById('chart-edp'), {
   type: 'bar',
